@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.QualityInspectionStandardMapper">
+
+    <resultMap type="QualityInspectionStandard" id="QualityInspectionStandardResult">
+        <result property="id" column="id" />
+        <result property="standardName" column="standard_name" />
+        <result property="sizePrecision" column="size_precision" />
+        <result property="surfaceRoughness" column="surface_roughness" />
+        <result property="hardness" column="hardness" />
+        <result property="material" column="material" />
+        <result property="status" column="status" />
+        <result property="remark" column="remark" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectQualityInspectionStandardVo">
+        select id, standard_name, size_precision, surface_roughness, hardness, material, status, remark, create_by, create_time, update_by, update_time
+        from quality_inspection_standard
+    </sql>
+
+    <select id="selectQualityInspectionStandardList" parameterType="QualityInspectionStandard" resultMap="QualityInspectionStandardResult">
+        <include refid="selectQualityInspectionStandardVo"/>
+        <where>
+            <if test="standardName != null and standardName != ''"> and standard_name like concat('%', #{standardName}, '%')</if>
+            <if test="sizePrecision != null and sizePrecision != ''"> and size_precision like concat('%', #{sizePrecision}, '%')</if>
+            <if test="surfaceRoughness != null and surfaceRoughness != ''"> and surface_roughness like concat('%', #{surfaceRoughness}, '%')</if>
+            <if test="hardness != null and hardness != ''"> and hardness like concat('%', #{hardness}, '%')</if>
+            <if test="material != null and material != ''"> and material like concat('%', #{material}, '%')</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectQualityInspectionStandardById" parameterType="Long" resultMap="QualityInspectionStandardResult">
+        <include refid="selectQualityInspectionStandardVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertQualityInspectionStandard" parameterType="QualityInspectionStandard" useGeneratedKeys="true" keyProperty="id">
+        insert into quality_inspection_standard
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="standardName != null and standardName != ''">standard_name,</if>
+            <if test="sizePrecision != null">size_precision,</if>
+            <if test="surfaceRoughness != null">surface_roughness,</if>
+            <if test="hardness != null">hardness,</if>
+            <if test="material != null">material,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="standardName != null and standardName != ''">#{standardName},</if>
+            <if test="sizePrecision != null">#{sizePrecision},</if>
+            <if test="surfaceRoughness != null">#{surfaceRoughness},</if>
+            <if test="hardness != null">#{hardness},</if>
+            <if test="material != null">#{material},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateQualityInspectionStandard" parameterType="QualityInspectionStandard">
+        update quality_inspection_standard
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="standardName != null and standardName != ''">standard_name = #{standardName},</if>
+            <if test="sizePrecision != null">size_precision = #{sizePrecision},</if>
+            <if test="surfaceRoughness != null">surface_roughness = #{surfaceRoughness},</if>
+            <if test="hardness != null">hardness = #{hardness},</if>
+            <if test="material != null">material = #{material},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteQualityInspectionStandardById" parameterType="Long">
+        delete from quality_inspection_standard where id = #{id}
+    </delete>
+
+    <delete id="deleteQualityInspectionStandardByIds" parameterType="String">
+        delete from quality_inspection_standard where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

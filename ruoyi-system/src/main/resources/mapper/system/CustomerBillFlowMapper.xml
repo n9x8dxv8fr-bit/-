@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CustomerBillFlowMapper">
+    
+    <resultMap type="CustomerBillFlow" id="CustomerBillFlowResult">
+        <result property="id"    column="id"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="customerName"    column="customer_name"    />
+        <result property="customerPhone"    column="customer_phone"    />
+        <result property="customerAddress"    column="customer_address"    />
+        <result property="billNo"    column="bill_no"    />
+        <result property="billType"    column="bill_type"    />
+        <result property="amount"    column="amount"    />
+        <result property="currency"    column="currency"    />
+        <result property="tradeDate"    column="trade_date"    />
+        <result property="tradeTime"    column="trade_time"    />
+        <result property="paymentMethod"    column="payment_method"    />
+        <result property="paymentAccount"    column="payment_account"    />
+        <result property="billStatus"    column="bill_status"    />
+        <result property="businessScene"    column="business_scene"    />
+        <result property="relatedOrderNo"    column="related_order_no"    />
+        <result property="remark"    column="remark"    />
+        <result property="detailDesc"    column="detail_desc"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectCustomerBillFlowVo">
+        select id, customer_id, customer_name, customer_phone, customer_address, bill_no, bill_type, amount, currency, trade_date, trade_time, payment_method, payment_account, bill_status, business_scene, related_order_no, remark, detail_desc, del_flag, create_by, create_time, update_by, update_time from customer_bill_flow
+    </sql>
+
+    <select id="selectCustomerBillFlowList" parameterType="CustomerBillFlow" resultMap="CustomerBillFlowResult">
+        <include refid="selectCustomerBillFlowVo"/>
+        <where>  
+            <if test="customerId != null  and customerId != ''"> and customer_id = #{customerId}</if>
+            <if test="customerName != null  and customerName != ''"> and customer_name like concat('%', #{customerName}, '%')</if>
+            <if test="customerPhone != null  and customerPhone != ''"> and customer_phone like concat('%', #{customerPhone}, '%')</if>
+            <if test="customerAddress != null  and customerAddress != ''"> and customer_address like concat('%', #{customerAddress}, '%')</if>
+            <if test="billNo != null  and billNo != ''"> and bill_no = #{billNo}</if>
+            <if test="billType != null  and billType != ''"> and bill_type = #{billType}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="currency != null  and currency != ''"> and currency = #{currency}</if>
+            <if test="tradeDate != null "> and trade_date = #{tradeDate}</if>
+            <if test="tradeTime != null "> and trade_time = #{tradeTime}</if>
+            <if test="paymentMethod != null  and paymentMethod != ''"> and payment_method = #{paymentMethod}</if>
+            <if test="paymentAccount != null  and paymentAccount != ''"> and payment_account = #{paymentAccount}</if>
+            <if test="billStatus != null  and billStatus != ''"> and bill_status = #{billStatus}</if>
+            <if test="businessScene != null  and businessScene != ''"> and business_scene = #{businessScene}</if>
+            <if test="relatedOrderNo != null  and relatedOrderNo != ''"> and related_order_no = #{relatedOrderNo}</if>
+            <if test="detailDesc != null  and detailDesc != ''"> and detail_desc = #{detailDesc}</if>
+        </where>
+    </select>
+    
+    <select id="selectCustomerBillFlowById" parameterType="String" resultMap="CustomerBillFlowResult">
+        <include refid="selectCustomerBillFlowVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCustomerBillFlow" parameterType="CustomerBillFlow">
+        insert into customer_bill_flow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="customerId != null and customerId != ''">customer_id,</if>
+            <if test="customerName != null and customerName != ''">customer_name,</if>
+            <if test="customerPhone != null and customerPhone != ''">customer_phone,</if>
+            <if test="customerAddress != null and customerAddress != ''">customer_address,</if>
+            <if test="billNo != null and billNo != ''">bill_no,</if>
+            <if test="billType != null and billType != ''">bill_type,</if>
+            <if test="amount != null">amount,</if>
+            <if test="currency != null">currency,</if>
+            <if test="tradeDate != null">trade_date,</if>
+            <if test="tradeTime != null">trade_time,</if>
+            <if test="paymentMethod != null">payment_method,</if>
+            <if test="paymentAccount != null">payment_account,</if>
+            <if test="billStatus != null and billStatus != ''">bill_status,</if>
+            <if test="businessScene != null">business_scene,</if>
+            <if test="relatedOrderNo != null">related_order_no,</if>
+            <if test="remark != null">remark,</if>
+            <if test="detailDesc != null">detail_desc,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="customerId != null and customerId != ''">#{customerId},</if>
+            <if test="customerName != null and customerName != ''">#{customerName},</if>
+            <if test="customerPhone != null and customerPhone != ''">#{customerPhone},</if>
+            <if test="customerAddress != null and customerAddress != ''">#{customerAddress},</if>
+            <if test="billNo != null and billNo != ''">#{billNo},</if>
+            <if test="billType != null and billType != ''">#{billType},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="currency != null">#{currency},</if>
+            <if test="tradeDate != null">#{tradeDate},</if>
+            <if test="tradeTime != null">#{tradeTime},</if>
+            <if test="paymentMethod != null">#{paymentMethod},</if>
+            <if test="paymentAccount != null">#{paymentAccount},</if>
+            <if test="billStatus != null and billStatus != ''">#{billStatus},</if>
+            <if test="businessScene != null">#{businessScene},</if>
+            <if test="relatedOrderNo != null">#{relatedOrderNo},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="detailDesc != null">#{detailDesc},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomerBillFlow" parameterType="CustomerBillFlow">
+        update customer_bill_flow
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerId != null and customerId != ''">customer_id = #{customerId},</if>
+            <if test="customerName != null and customerName != ''">customer_name = #{customerName},</if>
+            <if test="customerPhone != null and customerPhone != ''">customer_phone = #{customerPhone},</if>
+            <if test="customerAddress != null and customerAddress != ''">customer_address = #{customerAddress},</if>
+            <if test="billNo != null and billNo != ''">bill_no = #{billNo},</if>
+            <if test="billType != null and billType != ''">bill_type = #{billType},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="currency != null">currency = #{currency},</if>
+            <if test="tradeDate != null">trade_date = #{tradeDate},</if>
+            <if test="tradeTime != null">trade_time = #{tradeTime},</if>
+            <if test="paymentMethod != null">payment_method = #{paymentMethod},</if>
+            <if test="paymentAccount != null">payment_account = #{paymentAccount},</if>
+            <if test="billStatus != null and billStatus != ''">bill_status = #{billStatus},</if>
+            <if test="businessScene != null">business_scene = #{businessScene},</if>
+            <if test="relatedOrderNo != null">related_order_no = #{relatedOrderNo},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="detailDesc != null">detail_desc = #{detailDesc},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCustomerBillFlowById" parameterType="String">
+        delete from customer_bill_flow where id = #{id}
+    </delete>
+
+    <delete id="deleteCustomerBillFlowByIds" parameterType="String">
+        delete from customer_bill_flow where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

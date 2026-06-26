@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SteelBallInoutFlowMapper">
+
+    <resultMap type="SteelBallInoutFlow" id="SteelBallInoutFlowResult">
+        <result property="id" column="id"/>
+        <result property="flowNo" column="flow_no"/>
+        <result property="productName" column="product_name"/>
+        <result property="productType" column="product_type"/>
+        <result property="productSpec" column="product_spec"/>
+        <result property="inoutType" column="inout_type"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="productTotalIn" column="product_total_in"/>
+        <result property="productTotalInAmount" column="product_total_in_amount"/>
+        <result property="productTotalOut" column="product_total_out"/>
+        <result property="productTotalOutAmount" column="product_total_out_amount"/>
+        <result property="customerTotalOut" column="customer_total_out"/>
+        <result property="customerTotalOutAmount" column="customer_total_out_amount"/>
+        <result property="yearMonth" column="year_month"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="operateTime" column="operate_time"/>
+        <result property="operator" column="operator"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--
+      累计字段在查询时按时间顺序重算（窗口函数），与页面、导出一致；
+      表中历史快照列可为空或与重算不一致时仍以查询结果为准。需 MySQL 8+。
+    -->
+    <sql id="steelBallInoutFlowRunningSubquery">
+        (
+        SELECT
+            `id`, `flow_no`, `product_name`, `product_type`, `product_spec`,
+            `inout_type`, `quantity`, `unit_price`, `total_amount`,
+            `year_month`, `customer_name`, `order_no`,
+            `operate_time`, `operator`, `remark`, `create_time`, `update_time`,
+            SUM(CASE WHEN `inout_type` = 1 THEN IFNULL(`quantity`, 0) ELSE 0 END) OVER (
+                PARTITION BY `product_name`
+                ORDER BY COALESCE(`operate_time`, `create_time`) ASC, `id` ASC
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            ) AS `product_total_in`,
+            SUM(CASE WHEN `inout_type` = 1 THEN IFNULL(`total_amount`, 0) ELSE 0 END) OVER (
+                PARTITION BY `product_name`
+                ORDER BY COALESCE(`operate_time`, `create_time`) ASC, `id` ASC
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            ) AS `product_total_in_amount`,
+            SUM(CASE WHEN `inout_type` = 2 THEN IFNULL(`quantity`, 0) ELSE 0 END) OVER (
+                PARTITION BY `product_name`
+                ORDER BY COALESCE(`operate_time`, `create_time`) ASC, `id` ASC
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            ) AS `product_total_out`,
+            SUM(CASE WHEN `inout_type` = 2 THEN IFNULL(`total_amount`, 0) ELSE 0 END) OVER (
+                PARTITION BY `product_name`
+                ORDER BY COALESCE(`operate_time`, `create_time`) ASC, `id` ASC
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            ) AS `product_total_out_amount`,
+            SUM(CASE WHEN `inout_type` = 2 THEN IFNULL(`quantity`, 0) ELSE 0 END) OVER (
+                PARTITION BY IFNULL(NULLIF(TRIM(`customer_name`), ''), CONCAT('_anon_', `id`))
+                ORDER BY COALESCE(`operate_time`, `create_time`) ASC, `id` ASC
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            ) AS `customer_total_out`,
+            SUM(CASE WHEN `inout_type` = 2 THEN IFNULL(`total_amount`, 0) ELSE 0 END) OVER (
+                PARTITION BY IFNULL(NULLIF(TRIM(`customer_name`), ''), CONCAT('_anon_', `id`))
+                ORDER BY COALESCE(`operate_time`, `create_time`) ASC, `id` ASC
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            ) AS `customer_total_out_amount`
+        FROM steel_ball_inout_flow
+        )
+    </sql>
+
+    <sql id="selectSteelBallInoutFlowVo">
+        SELECT `id`, `flow_no`, `product_name`, `product_type`, `product_spec`,
+               `inout_type`, `quantity`, `unit_price`, `total_amount`,
+               `product_total_in`, `product_total_in_amount`, `product_total_out`, `product_total_out_amount`,
+               `customer_total_out`, `customer_total_out_amount`, `year_month`, `customer_name`, `order_no`,
+               `operate_time`, `operator`, `remark`, `create_time`, `update_time`
+        FROM
+        <include refid="steelBallInoutFlowRunningSubquery"/>
+        AS `flow_rt`
+    </sql>
+
+    <select id="selectSteelBallInoutFlowList" parameterType="SteelBallInoutFlow" resultMap="SteelBallInoutFlowResult">
+        <include refid="selectSteelBallInoutFlowVo"/>
+        <where>
+            <if test="flowNo != null  and flowNo != ''">and `flow_no` = #{flowNo}</if>
+            <if test="productName != null  and productName != ''">and `product_name` like concat('%', #{productName}, '%')</if>
+            <if test="productType != null  and productType != ''">and `product_type` = #{productType}</if>
+            <if test="productSpec != null  and productSpec != ''">and `product_spec` = #{productSpec}</if>
+            <if test="inoutType != null ">and `inout_type` = #{inoutType}</if>
+            <if test="operator != null  and operator != ''">and `operator` = #{operator}</if>
+            <if test="yearMonth != null  and yearMonth != ''">and `year_month` = #{yearMonth}</if>
+            <if test="customerName != null  and customerName != ''">and `customer_name` like concat('%', #{customerName}, '%')</if>
+            <if test="orderNo != null  and orderNo != ''">and `order_no` = #{orderNo}</if>
+        </where>
+    </select>
+
+    <select id="selectSteelBallInoutFlowById" parameterType="Long" resultMap="SteelBallInoutFlowResult">
+        <include refid="selectSteelBallInoutFlowVo"/>
+        where `id` = #{id}
+    </select>
+
+    <insert id="insertSteelBallInoutFlow" parameterType="SteelBallInoutFlow" useGeneratedKeys="true" keyProperty="id">
+        insert into steel_ball_inout_flow
+        (`flow_no`, `product_name`, `product_type`, `product_spec`, `inout_type`, `quantity`,
+         `unit_price`, `total_amount`,
+         `product_total_in`, `product_total_in_amount`, `product_total_out`, `product_total_out_amount`,
+         `customer_total_out`, `customer_total_out_amount`, `year_month`, `customer_name`, `order_no`,
+         `operate_time`, `operator`, `remark`, `create_time`, `update_time`)
+        values (#{flowNo}, #{productName}, #{productType}, #{productSpec}, #{inoutType}, #{quantity},
+                #{unitPrice}, #{totalAmount},
+                #{productTotalIn}, #{productTotalInAmount}, #{productTotalOut}, #{productTotalOutAmount},
+                #{customerTotalOut}, #{customerTotalOutAmount}, #{yearMonth}, #{customerName}, #{orderNo},
+                #{operateTime}, #{operator}, #{remark}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateSteelBallInoutFlow" parameterType="SteelBallInoutFlow">
+        update steel_ball_inout_flow
+        set `flow_no` = #{flowNo},
+            `product_name` = #{productName},
+            `product_type` = #{productType},
+            `product_spec` = #{productSpec},
+            `inout_type` = #{inoutType},
+            `quantity` = #{quantity},
+            `unit_price` = #{unitPrice},
+            `total_amount` = #{totalAmount},
+            `product_total_in` = #{productTotalIn},
+            `product_total_in_amount` = #{productTotalInAmount},
+            `product_total_out` = #{productTotalOut},
+            `product_total_out_amount` = #{productTotalOutAmount},
+            `customer_total_out` = #{customerTotalOut},
+            `customer_total_out_amount` = #{customerTotalOutAmount},
+            `year_month` = #{yearMonth},
+            `customer_name` = #{customerName},
+            `order_no` = #{orderNo},
+            `operate_time` = #{operateTime},
+            `operator` = #{operator},
+            `remark` = #{remark},
+            `update_time` = #{updateTime}
+        where `id` = #{id}
+    </update>
+
+    <delete id="deleteSteelBallInoutFlowById" parameterType="Long">
+        delete from steel_ball_inout_flow where `id` = #{id}
+    </delete>
+
+    <delete id="deleteSteelBallInoutFlowByIds" parameterType="String">
+        delete from steel_ball_inout_flow where `id` in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectSumQuantityByProduct" parameterType="java.util.Map" resultType="java.lang.Long">
+        SELECT IFNULL(SUM(`quantity`), 0) FROM steel_ball_inout_flow
+        WHERE `product_name` = #{productName} AND `inout_type` = #{inoutType}
+    </select>
+
+    <select id="selectSumAmountByProduct" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(`total_amount`), 0) FROM steel_ball_inout_flow
+        WHERE `product_name` = #{productName} AND `inout_type` = #{inoutType}
+    </select>
+
+    <select id="selectSumQuantityByCustomer" parameterType="java.util.Map" resultType="java.lang.Long">
+        SELECT IFNULL(SUM(`quantity`), 0) FROM steel_ball_inout_flow
+        WHERE `customer_name` = #{customerName} AND `inout_type` = #{inoutType}
+    </select>
+
+    <select id="selectSumAmountByCustomer" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(`total_amount`), 0) FROM steel_ball_inout_flow
+        WHERE `customer_name` = #{customerName} AND `inout_type` = #{inoutType}
+    </select>
+
+</mapper>

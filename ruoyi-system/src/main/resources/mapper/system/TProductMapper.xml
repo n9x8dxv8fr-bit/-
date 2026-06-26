@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TProductMapper">
+
+    <resultMap type="TProduct" id="TProductResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="ps"    column="ps"    />
+        <result property="parameter"    column="parameter"    />
+        <result property="price"    column="price"    />
+        <result property="characteristic"    column="characteristic"    />
+        <result property="application"    column="application"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTProductVo">
+        select id, name, type, ps, parameter, price, characteristic, application, del_flag, create_by, create_time, update_by, update_time from t_product
+    </sql>
+
+    <select id="selectTProductList" parameterType="TProduct" resultMap="TProductResult">
+        <include refid="selectTProductVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="ps != null and ps != ''"> and ps = #{ps}</if>
+            <if test="parameter != null  and parameter != ''"> and parameter = #{parameter}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="characteristic != null  and characteristic != ''"> and characteristic = #{characteristic}</if>
+            <if test="application != null  and application != ''"> and application = #{application}</if>
+        </where>
+    </select>
+
+    <select id="selectTProductById" parameterType="String" resultMap="TProductResult">
+        <include refid="selectTProductVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTProduct" parameterType="TProduct">
+        insert into t_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="type != null">type,</if>
+            <if test="ps != null">ps</if>
+            <if test="parameter != null">parameter,</if>
+            <if test="price != null">price,</if>
+            <if test="characteristic != null">characteristic,</if>
+            <if test="application != null">application,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="type != null">#{type},</if>
+            <if test="ps != null">#{ps},</if>
+            <if test="parameter != null">#{parameter},</if>
+            <if test="price != null">#{price},</if>
+            <if test="characteristic != null">#{characteristic},</if>
+            <if test="application != null">#{application},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTProduct" parameterType="TProduct">
+        update t_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="ps != null">ps = #{ps},</if>
+            <if test="parameter != null">parameter = #{parameter},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="characteristic != null">characteristic = #{characteristic},</if>
+            <if test="application != null">application = #{application},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTProductById" parameterType="String">
+        delete from t_product where id = #{id}
+    </delete>
+
+    <delete id="deleteTProductByIds" parameterType="String">
+        delete from t_product where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

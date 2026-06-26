@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SteelSaleMonthSummaryMapper">
+    
+    <resultMap type="SteelSaleMonthSummary" id="SteelSaleMonthSummaryResult">
+        <result property="id"    column="id"    />
+        <result property="year"    column="year"    />
+        <result property="month"    column="month"    />
+        <result property="totalSaleNum"    column="total_sale_num"    />
+        <result property="totalSaleAmount"    column="total_sale_amount"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSteelSaleMonthSummaryVo">
+        select id, year, month, total_sale_num, total_sale_amount, create_time, update_time from steel_sale_month_summary
+    </sql>
+
+    <select id="selectSteelSaleMonthSummaryList" parameterType="SteelSaleMonthSummary" resultMap="SteelSaleMonthSummaryResult">
+        <include refid="selectSteelSaleMonthSummaryVo"/>
+        <where>  
+            <if test="year != null "> and year = #{year}</if>
+            <if test="month != null "> and month = #{month}</if>
+            <if test="totalSaleNum != null "> and total_sale_num = #{totalSaleNum}</if>
+            <if test="totalSaleAmount != null "> and total_sale_amount = #{totalSaleAmount}</if>
+        </where>
+    </select>
+    
+    <select id="selectSteelSaleMonthSummaryById" parameterType="Long" resultMap="SteelSaleMonthSummaryResult">
+        <include refid="selectSteelSaleMonthSummaryVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSteelSaleMonthSummary" parameterType="SteelSaleMonthSummary" useGeneratedKeys="true" keyProperty="id">
+        insert into steel_sale_month_summary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="year != null">year,</if>
+            <if test="month != null">month,</if>
+            <if test="totalSaleNum != null">total_sale_num,</if>
+            <if test="totalSaleAmount != null">total_sale_amount,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="year != null">#{year},</if>
+            <if test="month != null">#{month},</if>
+            <if test="totalSaleNum != null">#{totalSaleNum},</if>
+            <if test="totalSaleAmount != null">#{totalSaleAmount},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSteelSaleMonthSummary" parameterType="SteelSaleMonthSummary">
+        update steel_sale_month_summary
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="year != null">year = #{year},</if>
+            <if test="month != null">month = #{month},</if>
+            <if test="totalSaleNum != null">total_sale_num = #{totalSaleNum},</if>
+            <if test="totalSaleAmount != null">total_sale_amount = #{totalSaleAmount},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSteelSaleMonthSummaryById" parameterType="Long">
+        delete from steel_sale_month_summary where id = #{id}
+    </delete>
+
+    <delete id="deleteSteelSaleMonthSummaryByIds" parameterType="String">
+        delete from steel_sale_month_summary where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

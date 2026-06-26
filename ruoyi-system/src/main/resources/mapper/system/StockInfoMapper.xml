@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StockInfoMapper">
+    
+    <resultMap type="StockInfo" id="StockInfoResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productSpec"    column="product_spec"    />
+        <result property="stockQuantity"    column="stock_quantity"    />
+        <result property="warnQuantity"    column="warn_quantity"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStockInfoVo">
+        select id, product_id, product_name, product_spec, stock_quantity, warn_quantity, update_time from stock_info
+    </sql>
+    
+    <select id="selectStockInfoList" parameterType="StockInfo" resultMap="StockInfoResult">
+        <include refid="selectStockInfoVo"/>
+        <where>  
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productSpec != null  and productSpec != ''"> and product_spec = #{productSpec}</if>
+            <if test="stockQuantity != null "> and stock_quantity = #{stockQuantity}</if>
+            <if test="warnQuantity != null "> and warn_quantity = #{warnQuantity}</if>
+        </where>
+    </select>
+    
+    <select id="selectStockInfoById" parameterType="Long" resultMap="StockInfoResult">
+        <include refid="selectStockInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockInfo" parameterType="StockInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into stock_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="productSpec != null">product_spec,</if>
+            <if test="stockQuantity != null">stock_quantity,</if>
+            <if test="warnQuantity != null">warn_quantity,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="productSpec != null">#{productSpec},</if>
+            <if test="stockQuantity != null">#{stockQuantity},</if>
+            <if test="warnQuantity != null">#{warnQuantity},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStockInfo" parameterType="StockInfo">
+        update stock_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="productSpec != null">product_spec = #{productSpec},</if>
+            <if test="stockQuantity != null">stock_quantity = #{stockQuantity},</if>
+            <if test="warnQuantity != null">warn_quantity = #{warnQuantity},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockInfoById" parameterType="Long">
+        delete from stock_info where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInfoByIds" parameterType="String">
+        delete from stock_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
+
